@@ -1,0 +1,37 @@
+[package]
+name = "sol_fetch_tx"
+version = "0.1.0"
+authors = ["pefish <pefish@qq.com>"]
+edition = "2018"
+default-run = "sol_fetch_tx"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.17.0", features = ["full"] }
+env_logger = "0.9.0"
+serde = { version = "1.0.136", features = ["derive"] }
+toml = "0.5.8"
+log = "0.4.14"
+anyhow = "1.0.56"
+signal-hook-tokio = { version = "0.3.1", features = ["futures-v0_3"] }
+signal-hook = "0.3.13"
+futures = "0.3.21"
+block_until_sigint = "0.1.0"
+clap = { version = "3.1.18", features = ["derive"] }
+reqwest = { version = "0.11.10", features = ["blocking", "json"] }
+rust_decimal = "1.23.1"
+csv = "1.1.6"
+
+[[bin]]
+name = "sol_fetch_tx"
+path = "src/main.rs"
+
+[profile.release]
+debug = true
+panic = 'abort'
+
+[[example]]
+name = "test"
+path = "examples/test.rs"
+

@@ -51,12 +51,12 @@ struct NeedDataType {
     pub amount: Decimal,
 }
 
-pub async fn fetch_loop (token_account: String) -> () {
+pub async fn fetch_loop (token_account: String, output: String) -> () {
     let mut inte = time::interval(Duration::from_secs(5));
     let mut offset = 0;
     let limit = 10;
 
-    let mut wtr = csv::Writer::from_path("./1.csv").unwrap();
+    let mut wtr = csv::Writer::from_path(output).unwrap();
 
     loop {
         inte.tick().await;

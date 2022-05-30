@@ -1,0 +1,5 @@
+[workspace]
+
+members = [
+  "sol_fetch_tx",
+]

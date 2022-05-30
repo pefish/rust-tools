@@ -9,7 +9,7 @@ XXX
 ## Install
 
 ```
-cargo install XXX
+cargo install --git https://github.com/pefish/rust-tools -- sol_fetch_tx
 ```
 
 ## Quick start

@@ -20,6 +20,12 @@ struct DataType {
 }
 
 #[derive(Deserialize, Debug)]
+struct TokensDataType {
+    pub tokenAccount: String,
+    pub tokenAddress: String,
+}
+
+#[derive(Deserialize, Debug)]
 struct TxType {
     pub hasNext: bool,
     pub total: u64,
@@ -51,7 +57,32 @@ struct NeedDataType {
     pub amount: Decimal,
 }
 
-pub async fn fetch_loop (token_account: String, output: String) -> () {
+pub async fn fetch_loop (address: String, token_address: String, output: String) -> () {
+    // 获取 token_account
+    let client = Client::new();
+    let result = client.get(
+        Url::parse(&format!("https://api.solscan.io/account/tokens?address={}&price=1", address)).unwrap()
+    )
+    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36")
+    .send()
+    .await;
+    if result.is_err() {
+        panic!("{:?}", result.err());
+    }
+    let res = result.unwrap();
+    let data = res.json::<HttpResult<Vec<TokensDataType>>>().await.unwrap();
+    if !data.succcess {
+        panic!("{:?}", "data.succcess false");
+    }
+    let mut token_account = "".to_string();
+    for item in data.data {
+        if item.tokenAddress == token_address {
+            token_account = item.tokenAccount;
+            break;
+        }
+    }
+    log::info!("token_account: {}", token_account);
+
     let mut inte = time::interval(Duration::from_secs(5));
     let mut offset = 0;
     let limit = 10;

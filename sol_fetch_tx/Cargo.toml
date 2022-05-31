@@ -1,6 +1,6 @@
 [package]
 name = "sol_fetch_tx"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["pefish <pefish@qq.com>"]
 edition = "2018"
 default-run = "sol_fetch_tx"
@@ -22,6 +22,7 @@ clap = { version = "3.1.18", features = ["derive"] }
 reqwest = { version = "0.11.10", features = ["blocking", "json"] }
 rust_decimal = "1.23.1"
 csv = "1.1.6"
+chrono = "0.4.19"
 
 [[bin]]
 name = "sol_fetch_tx"

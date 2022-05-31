@@ -1,5 +1,6 @@
 use std::time::Duration;
 use std::{str::FromStr};
+use chrono::{NaiveDateTime, DateTime, Utc};
 use rust_decimal::Decimal;
 use rust_decimal::prelude::{ToPrimitive, FromPrimitive};
 use tokio::time;
@@ -55,6 +56,7 @@ struct NeedDataType {
     pub from: String,
     pub to: String,
     pub amount: Decimal,
+    pub time: String,
 }
 
 pub async fn fetch_loop (address: String, token_address: String, output: String) -> () {
@@ -94,6 +96,7 @@ pub async fn fetch_loop (address: String, token_address: String, output: String)
         log::info!("offset: {}", offset);
 
         let client = Client::new();
+        // https://api.solscan.io/account/token/txs?address=H9mhqbPkymytwsxorawVYpsLybJB56NZFX3ChYEyWEev&offset=0&limit=10
         let result = client.get(
             Url::parse(&format!("https://api.solscan.io/account/token/txs?address={}&offset={}&limit={}", token_account, offset, limit)).unwrap()
         )
@@ -113,6 +116,7 @@ pub async fn fetch_loop (address: String, token_address: String, output: String)
             if tx.status == "Success".to_string() {
                 let mut to = tx.change.address.clone();
                 let mut from = tx.signer[0].clone();
+                let block_time = tx.blockTime;
                 let mut amount = Decimal::new(tx.change.changeAmount.to_i64().unwrap(), tx.change.decimals as u32).normalize();
                 // log::info!("{}, {}, {}", tx.change.changeAmount, tx.change.decimals, amount);
                 if tx.change.changeType == "dec" {
@@ -127,11 +131,14 @@ pub async fn fetch_loop (address: String, token_address: String, output: String)
                     to = tmp;
                     amount = -amount;
                 }
+                let naive = NaiveDateTime::from_timestamp(block_time as i64, 0);
+                let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
                 wtr.serialize(NeedDataType {
                     tx_hash: tx.txHash.clone(),
                     from,
                     to,
                     amount,
+                    time: datetime.format("%Y-%m-%d %H:%M:%S").to_string(),
                 }).unwrap();
             }
         }
